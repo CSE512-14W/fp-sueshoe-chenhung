@@ -1,0 +1,485 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Seattle Band Map</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="jquery-2.1.0.min.js"></script>
+    <style type="text/css">
+    html{
+      font-family: "Helvetica Neue", serif;
+      font-size: 0;
+    }
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+
+.connection {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.transparent {
+    opacity: 0.5;
+}
+
+#showSth {
+  width: 250px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #fff;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+#showSth #siteTitle{
+  font-size: 50px;
+  font-weight: 100;
+  line-height: 50px;
+  color: #dddddd;
+  margin: 20px;
+}
+
+#showSth #switchView{
+  padding: 20px;
+  width: 210px;
+  background-color: white;
+  color: black;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300;
+}
+
+#showSth #switchView:hover{
+  background-color: #bbbbbb;
+}
+
+#showSth #showView{
+  padding: 20px;
+  width: 210px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#showArtist {
+  width: 250px;
+  height: 100%;
+  position: absolute;
+  top: 0%;
+  left: 100%;
+  margin-left: -250px;
+  color: #fff;
+  z-index: 100;
+  background: rgba(0,0,0,0.8);
+
+}
+
+#showArtist #nowPlaying{
+  background-color: #dddddd;
+  width: 250px;
+  padding-top: 130px;
+  height: 60px;
+  margin-top: 0px;
+}
+#showArtist #nowPlaying span{
+  display: block;
+  padding: 20px 20px 20px 20px;
+  color: #000;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+#showArtist #bandInfo{
+  width: 100%;
+  height: 60px;
+  margin-top: 0px;
+}
+#showArtist #bandInfo #bandTitle{
+  display: block;
+  padding: 20px 20px 20px 20px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+#showArtist #bandImg{
+  display: none;
+  padding-left: 20px;
+  padding-right: 130px;
+  background-color: #000;
+}
+
+#showArtist #bandGenre{
+  margin: 20px 10px;
+  padding: 0px 10px 0px 9px;
+  border-left: 1px solid white;
+  width: 210px;
+  height: 54px;
+  overflow-y: scroll;
+  color: white;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 100;
+}
+
+#showArtist #bandRelated b{
+  font-weight: 700;
+}
+
+#showArtist #bandRelated{
+  margin: 20px 10px;
+  padding: 0px 10px 0px 9px;
+  border-left: 1px solid white;
+  width: 210px;
+  height: 206px;
+  overflow-y: scroll;
+  color: white;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 100;
+}
+
+#showArtist #bandRelated b{
+  font-weight: 700;
+}
+
+#hoverTag{
+  position: absolute;
+  font-size: 12px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  line-height: 20px;
+  display: none;
+}
+
+#graph {
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index:0;
+}
+
+    </style>
+  </head>
+  <body>
+  <div id='graph'></div>
+    <script>
+
+
+
+var width = $(window).width(),
+    height = $(window).height();
+
+var opa = 0.1;
+var semiopa = 0.5;
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+    .charge(-140)
+    .gravity(0.5)
+    .size([width, height]);
+
+var svg = d3.select("#graph").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("pointer-events", "all");
+
+var rect = svg.append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", width)
+              .attr("height", height)
+              .attr("fill", "white");
+
+var xx = d3.scale.linear().domain([0, 1]).range([0, 1]);
+var yy = d3.scale.linear().domain([0, 1]).range([0, 1]);
+//$("#showSth").html(xx + " _ " + yy);
+var forceVar = 0;
+var connectionVar = 0;
+
+d3.json("band_e_mar18.json", function(error, graph) {
+  //var zoomListener = d3.behavior.zoom().on("zoom", redraw);
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .chargeDistance(width)
+      .start();
+
+  $('#switchView').click(function(){
+    if(forceVar == 0){
+      forceVar = 1;
+      force.stop()
+      .nodes(graph.nodes)
+      .links(graph.connections)
+      .chargeDistance(width)
+      .start();
+
+      $(".link").css("opacity", 0);
+      $(".connection").css("opacity", opa);
+
+      if(connectionVar == 0){
+        connectionVar = 1;
+        connection.style("stroke-width", function(d) { 
+          connectedByIndex[d.source.index + "," + d.target.index] = 1;
+          connectedByIndex[d.target.index + "," + d.source.index] = 1;
+          //console.log(d.source.index);
+          return 1; 
+        });
+      }
+
+      $("#showView").html("collaboration / member-sharing view");
+
+    }
+    else{
+      forceVar = 0;
+      force.stop()
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .chargeDistance(width)
+      .start();
+
+      $(".link").css("opacity", opa);
+      $(".connection").css("opacity", 0);
+
+      $("#showView").html("style similarity view");
+    }
+  });
+
+  svg.call(d3.behavior.zoom().on("zoom", redraw));
+
+  var linkedByIndex = {};
+  var connectedByIndex = {};
+
+  var link = svg.selectAll(".link")
+      .data(graph.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .attr("opacity", opa)
+      .style("stroke-width", function(d) { 
+        linkedByIndex[d.source.index + "," + d.target.index] = 1;
+        linkedByIndex[d.target.index + "," + d.source.index] = 1;
+        return d.value * 2; 
+    });
+  var connection = svg.selectAll(".connection")
+      .data(graph.connections)
+    .enter().append("line")
+      .attr("class", "connection")
+      .attr("opacity", opa)
+      .style("stroke-width", function(d) { 
+        connectedByIndex[d.source.index + "," + d.target.index] = 1;
+        connectedByIndex[d.target.index + "," + d.source.index] = 1;
+        //console.log(d.source.index);
+        return 1; 
+    });
+
+  var clicked = [];
+  var currentBand = "";
+  var node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 5)
+      .attr("name", function(d){return d.name;})
+      .attr("opacity", opa)
+      .attr("cursor", "pointer")
+      .style("fill", function(d) { return color(d.group); })
+      .on("click", function(d){
+      if(currentBand.localeCompare(d.name) != 0){
+        //console.log(d.link);
+        var linkStr = d.link;
+        currentBand = d.name;
+        $("#bandTitle").html(d.name);
+        $("#m4a").attr("src",linkStr);
+        $("#m4a").get(0).play();
+        $("#m4a").show();
+        //console.log(d.img);
+        var imgStr = d.img;
+        $("#bandImg").attr("src",imgStr);
+        $("#bandImg").show();
+        /*
+        d.x = getCenter.x;
+        d.y = getCenter.y;
+        */
+        var nodeNeighbors = [];
+        clicked.length = 0;
+        clicked.push(d);
+        $('#bandRelated').html("<b>Related Artists</b>");
+        if(forceVar == 0){
+          link.style("opacity", function(l){
+              if(d === l.source){
+                  nodeNeighbors.push(l.target);
+                  clicked.push(l.target);
+                  $('#bandRelated').append("<br>" + l.target.name);
+                  return 1;
+              }
+              else if(d === l.target){
+                  nodeNeighbors.push(l.source);
+                  clicked.push(l.source);
+                  $('#bandRelated').append("<br>" + l.source.name);
+                  return 1;
+              }
+              else{
+                  return opa;
+              }
+          });
+        }
+        else{
+          connection.style("opacity", function(l){
+              if(d === l.source){
+                  nodeNeighbors.push(l.target);
+                  clicked.push(l.target);
+                  $('#bandRelated').append("<br>" + l.target.name);
+                  return 1;
+              }
+              else if(d === l.target){
+                  nodeNeighbors.push(l.source);
+                  clicked.push(l.source);
+                  $('#bandRelated').append("<br>" + l.source.name);
+                  return 1;
+              }
+              else{
+                  return opa;
+              }
+          });
+        }
+        node.style("opacity", function(o) {
+            return neighboring(d, o) ? semiopa : opa;
+        });
+        var nodeSelection = d3.select(this).style({opacity:'1'});
+      }
+      })
+      .call(force.drag);
+/*
+  $("circle").hover(function(){
+    var tx = $(this).attr('cx');
+    var ty = $(this).attr('cy');
+    var tname = $(this).attr('name');
+    $("#hoverTag").css('left', tx);
+    $("#hoverTag").css('top', ty);
+    $("#hoverTag").html(tname);
+    $("#hoverTag").show();
+  }, function(){
+    $("#hoverTag").hide();
+  });
+*/ 
+  var label = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("text")
+      .attr("dx", ".10em")
+      .attr("dy", ".10em")
+      .text(function(d) { 
+          return d.name; 
+      });
+  $("rect").click(function(){
+    node.style("opacity", opa);
+    if(forceVar == 0){
+      link.style("opacity", opa);
+    }
+    else{
+      connection.style("opacity", opa);
+    }
+    $("#m4a").get(0).pause();
+    $("#m4a").hide();
+    $("#bandImg").hide();
+    $('#bandRelated').html("<b>Related Artists</b><br>(N.A.)");
+    $("#bandTitle").html("-Click on a band-");
+  });
+
+  node.append("title")
+      .text(function(d) { return d.name; });
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    connection.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  });
+
+  function neighboring(a, b) {
+    if(forceVar == 0){
+      return linkedByIndex[a.index + "," + b.index];
+    }
+    else{
+      return connectedByIndex[a.index + "," + b.index];
+    }
+  }
+
+    function redraw() {
+      var coordinates = [0, 0];
+      coordinates = d3.mouse(this);
+      var mx = coordinates[0];
+      var my = coordinates[1];
+      svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+      /*
+        if(d3.event) { 
+            //$("#showSth").html("redraw");
+            d3.event.transform(xx(mx), yy(my));
+        }
+        */
+/*
+
+        node.attr("cx", function(d) { if(d.index == 5) {console.log(xx(d.x));} return xx(d.x) }) 
+             .attr("x",  function(d) { return xx(d.x) }) 
+             .attr("cy", function(d) { return yy(d.y) }) 
+             .attr("y",  function(d) { return yy(d.y) });
+             */
+             /*
+        svg.attr("transform",
+            "translate(" + d3.event.translate + ")"
+            + " scale(" + d3.event.scale + ")");
+    */
+    }
+
+});
+
+function getCenter() {
+    var center = {
+        x : width / 2,
+        y : height / 2
+    };
+    return center;
+}
+
+
+
+    </script>
+    <div id='showSth'>
+      <div id='siteTitle'>Seattle<br>Band<br>Map</div>
+      <div id='switchView'>SWITCH VIEW</div>
+      <div id='showView'>style similarity view</div>
+    </div>
+    <div id='showArtist'>
+      <div id='nowPlaying'><span>Now Playing</span></div>
+      <div id='bandInfo'><span id='bandTitle'>-Click on a band-</span></div>
+      <img id='bandImg' />
+      <audio controls id='m4a' style='display: none; width: 250px;'>
+      </audio>
+      <div id='bandGenre'><b>Genre</b><br>(N.A.)</div>
+      <div id='bandRelated'><b>Related Artists</b><br>(N.A.)</div>
+    </div>
+    <div id='hoverTag'></div>
+  </body>
+</html>
