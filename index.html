@@ -212,7 +212,7 @@ var yy = d3.scale.linear().domain([0, 1]).range([0, 1]);
 var forceVar = 0;
 var connectionVar = 0;
 
-d3.json("band_e_mar18.json", function(error, graph) {
+d3.json("band_e_mar20_1.json", function(error, graph) {
   //var zoomListener = d3.behavior.zoom().on("zoom", redraw);
   force
       .nodes(graph.nodes)
@@ -304,6 +304,7 @@ d3.json("band_e_mar18.json", function(error, graph) {
         var linkStr = d.link;
         currentBand = d.name;
         $("#bandTitle").html(d.name);
+        $("#bandGenre").html("<b>Genre</b><br>" + d.genre);
         $("#m4a").attr("src",linkStr);
         $("#m4a").get(0).play();
         $("#m4a").show();
@@ -398,6 +399,7 @@ d3.json("band_e_mar18.json", function(error, graph) {
     $("#bandImg").hide();
     $('#bandRelated').html("<b>Related Artists</b><br>(N.A.)");
     $("#bandTitle").html("-Click on a band-");
+    $("#bandGenre").html("<b>Genre</b><br>(N.A.)");
   });
 
   node.append("title")
