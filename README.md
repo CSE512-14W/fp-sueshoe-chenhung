@@ -20,7 +20,7 @@ Paper Abstract: We propose a redesign of the Seattle Band Map (seattlebandmap.co
 Many music discovery and artist collaboration visualizations effectively reduce large networks by having the user input a band or song and generating a graph of related data points. Rather than having the user input a starting point, we use the shape of the network to prompt exploration and allow for broader discovery. This challenged us to find new ways to organize the data and to give users enough control to navigate the global view as well as identify and focus in on points or areas of interest. 
 
 [Poster](https://raw.githubusercontent.com/CSE512-14W/fp-sueshoe-chenhung/gh-pages/final/poster-sueshoe-chenhung.png),
-[Paper](https://github.com/CSE512-14W/fp-sueshoe-chenhung/blob/gh-pages/final/paper-sueshoe-chenhung.pdf)
+[Paper](https://github.com/CSE512-14W/fp-sueshoe-chenhung/raw/gh-pages/final/paper-sueshoe-chenhung.pdf)
 
 ## Running Instructions
 
