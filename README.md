@@ -12,8 +12,7 @@ We worked together on mockups for design ideas, and narrowing in on what type of
 Susanne was responsible for data collection and preparation, the poster and the paper. Chase built the visualization,
 including coming up with the equation to calculate the force between the nodes. 
 
-We were not able to fully implement our design (the filters are still under construction) but present a proof of concept
-for a new way to experience and explore the Seattle Band Graph.
+Parts of the design (the filters) are still under construction but we present a proof of concept for a new way to experience and explore the Seattle Band Map.
 
 ## Running Instructions
 
