@@ -49,6 +49,16 @@
   margin: 20px;
 }
 
+#showSth #siteDesc{
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 20px;
+  color: #dddddd;
+  margin: 0 20px 20px;
+  padding-top: 20px;
+  border-top: 1px solid #bbbbbb;
+}
+
 #showSth #switchView{
   padding: 20px;
   width: 210px;
@@ -89,6 +99,42 @@
   color: white;
   font-size: 12px;
   font-weight: 500;
+}
+
+#showSth #timeFilter{
+  padding: 20px;
+  width: 210px;
+  height: 40px;
+}
+
+#showSth #timeFilter #timeFilterTitle{
+  width: 210px;
+  font-size: 12px;
+  margin: 0px 0px 10px;
+  font-weight: 300;
+}
+
+#showSth #timeFilter .timeslot{
+  width: 34px;
+  border-right: 1px solid white;
+  text-align: center;
+  font-size: 10px;
+  color: black;
+  background: #bbbbbb;
+  display: inline-block;
+  cursor: pointer;
+}
+
+
+#showSth #timeFilter .timeslot:hover{
+  font-weight: 700;
+}
+
+#showSth #timeFilter #timeFilterNote{
+  width: 210px;
+  font-size: 12px;
+  margin: 10px 0px 0px;
+  font-weight: 300;
 }
 
 #showArtist {
@@ -151,7 +197,7 @@
   color: white;
   font-size: 12px;
   line-height: 18px;
-  font-weight: 100;
+  font-weight: 300;
 }
 
 #showArtist #bandRelated b{
@@ -168,7 +214,7 @@
   color: white;
   font-size: 12px;
   line-height: 18px;
-  font-weight: 100;
+  font-weight: 300;
 }
 
 #showArtist #bandRelated b{
@@ -203,7 +249,7 @@
 var width = $(window).width(),
     height = $(window).height();
 
-var opa = 0.1;
+var opa = 0.15;
 var semiopa = 0.5;
 
 var color = d3.scale.category20();
@@ -397,19 +443,7 @@ d3.json("band_e_mar20_1.json", function(error, graph) {
       }
       })
       .call(force.drag);
-/*
-  $("circle").hover(function(){
-    var tx = $(this).attr('cx');
-    var ty = $(this).attr('cy');
-    var tname = $(this).attr('name');
-    $("#hoverTag").css('left', tx);
-    $("#hoverTag").css('top', ty);
-    $("#hoverTag").html(tname);
-    $("#hoverTag").show();
-  }, function(){
-    $("#hoverTag").hide();
-  });
-*/ 
+
   var label = svg.selectAll(".node")
       .data(graph.nodes)
     .enter().append("text")
@@ -502,8 +536,20 @@ function getCenter() {
     </script>
     <div id='showSth'>
       <div id='siteTitle'>Seattle<br>Band<br>Map</div>
+      <div id='siteDesc'>The Seattle Band Map explores how bands from the Pacific Northwest are connected. View relationships between bands based on sound similarity or artistic collaboration using the toggles below</div>
       <div id='simView' class='switchView on'>SIMILARITY VIEW</div>
       <div id='collabView'class='switchView'>COLLABORATION VIEW</div>
+      <div id='timeFilter'>
+        <div id='timeFilterTitle'>TIME FILTER</div>
+        <div class='timeslot'>60s</div>
+        <div class='timeslot'>70s</div>
+        <div class='timeslot'>80s</div>
+        <div class='timeslot'>90s</div>
+        <div class='timeslot'>00s</div>
+        <div class='timeslot'>10s</div>
+        <div id='timeFilterNote'>under construction</div>
+      </div>
+      <div id='genreFilter'></div>
       <!--div id='switchView'>SWITCH VIEW</div>
       <div id='showView'>style similarity view</div-->
     </div>
