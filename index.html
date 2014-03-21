@@ -59,6 +59,26 @@
   font-weight: 300;
 }
 
+
+#showSth .switchView{
+  padding: 20px;
+  width: 210px;
+  background-color: #bbbbbb;
+  color: black;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 300;
+}
+
+#showSth .switchView.on{
+  background-color: white;
+}
+
+
+#showSth .switchView:hover{
+  background-color: white;
+}
+
 #showSth #switchView:hover{
   background-color: #bbbbbb;
 }
@@ -220,8 +240,31 @@ d3.json("band_e_mar20_1.json", function(error, graph) {
       .chargeDistance(width)
       .start();
 
-  $('#switchView').click(function(){
+
+  $('#simView').click(function(){
     if(forceVar == 0){
+    }
+    else{
+      $('#collabView').removeClass('on');
+      $('#simView').addClass('on');
+      forceVar = 0;
+      force.stop()
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .chargeDistance(width)
+      .start();
+
+      $(".link").css("opacity", opa);
+      $(".connection").css("opacity", 0);
+
+      //$("#showView").html("style similarity view");
+    }
+  });
+
+  $('#collabView').click(function(){
+    if(forceVar == 0){
+      $('#simView').removeClass('on');
+      $('#collabView').addClass('on');
       forceVar = 1;
       force.stop()
       .nodes(graph.nodes)
@@ -242,21 +285,10 @@ d3.json("band_e_mar20_1.json", function(error, graph) {
         });
       }
 
-      $("#showView").html("collaboration / member-sharing view");
+      //$("#showView").html("collaboration / member-sharing view");
 
     }
     else{
-      forceVar = 0;
-      force.stop()
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .chargeDistance(width)
-      .start();
-
-      $(".link").css("opacity", opa);
-      $(".connection").css("opacity", 0);
-
-      $("#showView").html("style similarity view");
     }
   });
 
@@ -470,8 +502,10 @@ function getCenter() {
     </script>
     <div id='showSth'>
       <div id='siteTitle'>Seattle<br>Band<br>Map</div>
-      <div id='switchView'>SWITCH VIEW</div>
-      <div id='showView'>style similarity view</div>
+      <div id='simView' class='switchView on'>SIMILARITY VIEW</div>
+      <div id='collabView'class='switchView'>COLLABORATION VIEW</div>
+      <!--div id='switchView'>SWITCH VIEW</div>
+      <div id='showView'>style similarity view</div-->
     </div>
     <div id='showArtist'>
       <div id='nowPlaying'><span>Now Playing</span></div>
